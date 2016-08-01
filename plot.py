@@ -12,7 +12,6 @@ buffer_rows = 128 * 60 * 60 # An hours worth?
 def plot(data):
     #data = data[::8,:] # Downsample a bit, not really meaningful to look at otherwise
     plt.clf()
-    #plt.figure(figsize=(16,8))
     eeg_data = data[:,:14]
     quality_data = data[:,14:]
     samples, channels = eeg_data.shape
@@ -31,22 +30,8 @@ def plot(data):
     
     quality_dmin = quality_data.min()
     quality_dmax = quality_data.max()
-    #dr = (quality_dmax - quality_dmin)
-    #quality_y0 = quality_dmin
-    #quality_y1 = (channels - 1) * dr + quality_dmax
-    #y0 = quality_dmin
-    #y1 = (channels - 1) * dr + quality_dmax
-    
 
     quality_normalized = ((quality_data - quality_dmin) / (quality_dmax - quality_dmin + 1e-20)) * dr
-
-    #print(quality_normalized.max())
-    #print(quality_normalized.min())
-    #print(dr)
-
-    #print(quality_data)
-    #print(quality_dmax)
-    #print(quality_dmin)
 
     plt.ylim(y0, y1)
     segs, quality_segs = [], []
