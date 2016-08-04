@@ -39,6 +39,7 @@ def main(savefile):
     nodata = 0
     nodata_sleep = .1
     data_buffer = np.zeros([buffer_rows, width])
+    starting = True
     
     try:
         for packet in em.get_packets():
@@ -47,6 +48,9 @@ def main(savefile):
             if counter_modulo == buffer_rows - 1:
                 flush_buffer(data_buffer, savefile + str(time.time()), buffer_rows)
             counter += 1
+            if starting:
+                print("Running ...")
+                starting = False
 
     except KeyboardInterrupt:
         print("Keyboard interrupt, exiting")
