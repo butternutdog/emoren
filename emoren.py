@@ -77,7 +77,9 @@ class EmotivPacket(object):
 
         self.raw_data = data
         self.counter = data[0]
+        self.raw_battery = None
         if self.counter > 127:
+            self.raw_battery = self.counter
             self.counter = 128
         self.sync = self.counter == 0xe9
         self.gyro_x = data[29] - 106
@@ -150,11 +152,12 @@ class EmotivPacket(object):
         """
         Returns custom string representation of the Emotiv Packet.
         """
-        return 'EmotivPacket(counter=%i, gyro_x=%i, gyro_y=%i, gyro_z=%s)' % (
+        return 'EmotivPacket(counter=%i, gyro_x=%i, gyro_y=%i, gyro_z=%s, raw_battery=%s)' % (
             self.counter,
             self.gyro_x,
             self.gyro_y,
-            self.gyro_z)
+            self.gyro_z,
+            self.raw_battery)
 
 def is_old_model(serial_number):
     if "GM" in serial_number[-2:]:
@@ -266,7 +269,9 @@ def handle_quality(self, sensors):
         return current_contact_quality
 
 def setup(headset, is_research=True):
-
+    '''
+    `is_research` should be True if EPOC+, try False if you have an EPOC
+    '''
     hidapi.hid_init()
     path, serial_number = hid_enumerate()
 
@@ -330,7 +335,7 @@ def decrypt(task, headset):
         task = task[1:] 
 
     task = bytes(task)
-    data = headset['decryptor'].update(task) #+ headset['decryptor'].finalize()
+    data = bytearray(headset['decryptor'].update(task)) #+ headset['decryptor'].finalize()
     p = EmotivPacket(data, headset['old_model'])
     return p
 
